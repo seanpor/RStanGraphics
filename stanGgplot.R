@@ -138,6 +138,7 @@ if (FALSE) {
 # here's an older dumber version
 stanPathPlot.1 <- function(fit, whichpair=c(1,2), chaini=1, N=75, ns=4) {
   stopifnot(require(ggplot2))
+  stopifnot(require(rstan))
   # ok... lets be sensible... these MUST be TRUE
   stopifnot(!is.null(fit))
   stopifnot(!is.null(whichpair))
@@ -209,3 +210,21 @@ chooseSubsamples <- function(len, N=75, ns=4, sDEBUG=FALSE) {
 # chooseSubsamples(20, 4, 3) # for test purposes
 # system.time( { chooseSubsamples(1000) } ) # not measurable at N=1000
 # at N=1 million it takes about 0.3secs on this laptop 
+
+
+# do a marginal density plot of all of the info extracted from a fit object
+# for a given parameter
+marginalDensity <- function(fit, col=1) {
+  stopifnot(require(ggplot2))
+  stopifnot(require(rstan))
+  # ok... lets be sensible... these MUST be TRUE
+  stopifnot(!is.null(fit))
+  stopifnot(!is.null(col))
+  stopifnot(col >= 1)
+  
+  adf <- data.frame(extract(fit))
+  qplot(adf[,col], data=adf, geom='density',
+      xlim=range(adf[,col]), ylab='Marginal Density', xlab=names(adf)[col])
+}
+# marginalDensity(fit)
+# marginalDensity(fit, col=2)
