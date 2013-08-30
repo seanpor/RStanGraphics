@@ -22,7 +22,7 @@ samplePathPlot.tex contains the tikz() output from the sample fit object above.
 
 NB. requires the libraries ggplot2 and rstan
 
-To test this... just say something like:
+To test this, just say something like:
 
 ```R
 source('stanGgplot.R');
@@ -41,3 +41,6 @@ To-Do
   chain than 50 points - which still seems a touch short.
 * consider playing with line widths and removing the point geom.
 * convert this to a CRAN upload-able package
+* add margin plots
+* create a pairs plot with margins on the diagonal, and stanPathPlot()
+  above the diagonal and plain densities below the diagonal.
