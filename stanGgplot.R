@@ -46,7 +46,7 @@
 #       [5,] 1718.608 0.0002664065
 #       [6,] 1482.773 0.0002456264
 #
-stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4) {
+stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4, ignoreDups=TRUE, sDEBUG=FALSE) {
   stopifnot(require(ggplot2))
   # ok... lets be sensible... these MUST be TRUE
   stopifnot(!is.null(fit))
@@ -57,6 +57,13 @@ stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4) {
   # need to set permuted as otherwise there will be a random order to the points in the chain!
   e1 <- extract(fit, permuted=FALSE) 
   e2 <- e1[,chaini,whichpair] # now extract the chain and pair we're interested in
+  e2 <- data.frame(e2)
+  if (ignoreDups) {
+    e2 <- e2[!duplicated(e2),]
+  }
+  if (sDEBUG) {
+    cat('Effective Number of rows is', nrow(e2), '\n')
+  }
   # how many will we actually sample?
   if (nrow(e2) > N*ns) { # we can manage to do all the subsamples as required
     # starting indices
@@ -90,12 +97,17 @@ stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4) {
   q <- qplot(adf[,1], adf[,2], xlab=names(adf)[1], ylab=names(adf)[2], colour=adf$label,
       xlim=range(e2[,1]), ylim=range(e2[,2]), geom=c('path', 'point')) +
     labs(colour='Starting Index')
-  print(q)
+  # print(q)
   q
 }
+# having a fit object in memory already I can just say
+# saveRDS(fit, file='sample_banana_fit_object.rds')
+# and later read it back in using...
+# fit <- readRDS('sample_banana_fit_object.rds')
 stanPathPlot(fit)
 
 
+# lets just see what things look like in a LaTeX document
 if (FALSE) {
   stopifnot(require(tikzDevice))
   # for marginfigures in a Tufte doc
@@ -105,7 +117,7 @@ if (FALSE) {
   kTIKZ.big.width <- 4.0
   kTIKZ.big.height <- 2.8
   tikz('samplePathPlot.tex', width=kTIKZ.big.width, height=kTIKZ.big.height)
-    stanPathPlot(fit)
+    print(stanPathPlot(fit))
   dev.off()
 }
 
