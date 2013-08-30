@@ -109,6 +109,8 @@ stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4,
 # and later read it back in using...
 # fit <- readRDS('sample_banana_fit_object.rds')
 # stanPathPlot(fit)
+# nb. if put inside a script, then this will need to have a print() wrapper!!!
+# ggsave('sample_banana_fit_object.pdf') # if suitable for saving
 
 
 # lets just see what things look like in a LaTeX document

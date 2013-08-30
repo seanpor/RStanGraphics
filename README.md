@@ -30,7 +30,7 @@ fit <- readRDS('sample_banana_fit_object.rds')
 stanPathPlot(fit)
 ```
 
-Feedback welcome.
+Constructive feedback welcome.
 
 
 To-Do
