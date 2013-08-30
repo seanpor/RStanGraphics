@@ -16,7 +16,22 @@ sub-samples in a random fashion without overlap.
 Currently the stanPathPlot function are works for well behaved fit objects,
 but it should be more thoroughly exercised for less well behaved fit objects.
 
+The R code is in the file stanGgplot.R
+sample_banana_fit_object.rds contains a sample fit object 
+samplePathPlot.tex contains the tikz() output from the sample fit object above.
+
+NB. requires the libraries ggplot2 and rstan
+
+To test this... just say something like:
+
+```R
+source('stanGgplot.R');
+fit <- readRDS('sample_banana_fit_object.rds')
+stanPathPlot(fit)
+```
+
 Feedback welcome.
+
 
 To-Do
 -----

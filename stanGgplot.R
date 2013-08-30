@@ -46,8 +46,12 @@
 #       [5,] 1718.608 0.0002664065
 #       [6,] 1482.773 0.0002456264
 #
-stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4, ignoreDups=TRUE, sDEBUG=FALSE) {
+# geomlist=c('path','point') is also possible
+#
+stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4,
+      ignoreDups=TRUE, sDEBUG=FALSE, geomlist=c('path')) {
   stopifnot(require(ggplot2))
+  stopifnot(require(rstan))
   # ok... lets be sensible... these MUST be TRUE
   stopifnot(!is.null(fit))
   stopifnot(!is.null(whichpair))
@@ -95,7 +99,7 @@ stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4, ignoreDups
   adf$label <- as.factor(adf$label)
   
   q <- qplot(adf[,1], adf[,2], xlab=names(adf)[1], ylab=names(adf)[2], colour=adf$label,
-      xlim=range(e2[,1]), ylim=range(e2[,2]), geom=c('path', 'point')) +
+      xlim=range(e2[,1]), ylim=range(e2[,2]), geom=geomlist) +
     labs(colour='Starting Index')
   # print(q)
   q
@@ -104,7 +108,7 @@ stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4, ignoreDups
 # saveRDS(fit, file='sample_banana_fit_object.rds')
 # and later read it back in using...
 # fit <- readRDS('sample_banana_fit_object.rds')
-stanPathPlot(fit)
+# stanPathPlot(fit)
 
 
 # lets just see what things look like in a LaTeX document
