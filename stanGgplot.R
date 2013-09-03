@@ -113,20 +113,6 @@ stanPathPlot <- function(fit, whichpair=c(1,2), chaini=1, N=50, ns=4,
 # ggsave('sample_banana_fit_object.pdf') # if suitable for saving
 
 
-# lets just see what things look like in a LaTeX document
-if (FALSE) {
-  stopifnot(require(tikzDevice))
-  # for marginfigures in a Tufte doc
-  kTIKZ.width <- 2.5
-  kTIKZ.height <- 2.5
-  # for plain figures in a Tufte doc
-  kTIKZ.big.width <- 4.0
-  kTIKZ.big.height <- 2.8
-  tikz('samplePathPlot.tex', width=kTIKZ.big.width, height=kTIKZ.big.height)
-    print(stanPathPlot(fit))
-  dev.off()
-}
-
 if (FALSE) {
   pdf('testing_Path_Plots.pdf', width=(297-20)/25.4, height=(210-20)/25.4)
   for (i in 1:25) {
@@ -228,3 +214,26 @@ marginalDensity <- function(fit, col=1) {
 }
 # marginalDensity(fit)
 # marginalDensity(fit, col=2)
+
+# lets just see what things look like in a LaTeX document
+if (FALSE) {
+  stopifnot(require(tikzDevice))
+  # for marginfigures in a Tufte doc
+  kTIKZ.width <- 2.5
+  kTIKZ.height <- 2.5
+  # for plain figures in a Tufte doc
+  kTIKZ.big.width <- 4.0
+  kTIKZ.big.height <- 2.8
+
+  # word of warning tikz() can't handle lp__ as a parameter name
+  # so has to be preprocessed to something without the underscores
+  # or so that the underscores are escaped (for TeX).
+  tikz('samplePathPlot.tex', width=kTIKZ.big.width, height=kTIKZ.big.height)
+    print(stanPathPlot(fit))
+  dev.off()
+
+  tikz('sampleMarginalDensityPlot.tex', width=kTIKZ.big.width, height=kTIKZ.big.height)
+    print(marginalDensity(fit))
+  dev.off()
+}
+
