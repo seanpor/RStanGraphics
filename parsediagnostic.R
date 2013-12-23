@@ -132,4 +132,43 @@ test.parsediagnostic <- function() {
   fnam1 <- dir(path='./visual-diagnostics-master/', pattern='^diagnostic_file.dat.*$', full=TRUE)[[1]]
   # debug(parsediagnostic)
   tres <- parsediagnostic(fnam1)
+  stopifnot(require(ggplot2))
+
+  # alpha, beta is specific to this problem
+  qplot(as.ordered(treedepth__), alpha, data=tres$diags, geom='violin', xlab='Tree depth') 
+  qplot(stepsize__, alpha, data=tres$diags, xlab='Step Size', log='x') 
+
+  
+  qplot(as.ordered(treedepth__), beta, data=tres$diags, geom='violin', xlab='Tree depth') 
+  qplot(stepsize__, beta, data=tres$diags, xlab='Step Size', log='x') 
+
+  # generic type plots...
+
+  # histogram of Tree Depth
+  qplot(ordered(treedepth__), data=tres$diags, geom='histogram', xlab='Tree depth')
+
+  # where is the mass of stepsize wrt treedepth - violin plot
+  qplot(as.ordered(treedepth__), stepsize__, data=tres$diags, geom='violin', xlab='Tree depth')
+
+  # so how did tree depth move as the chain progressed?
+  qplot(1:nrow(tres$diags), treedepth__, data=tres$diags, xlab='Iteration', ylab='Tree depth', geom='line', colour=mode)
+
+  # so how did stepsize move as the chain progressed?
+  qplot(1:nrow(tres$diags), stepsize__, data=tres$diags, xlab='Iteration', geom='line', colour=mode, log='y')
+
+
+  # for the record plotting an ACF is done in ggplot2 like
+  # http://stackoverflow.com/questions/17788859/acf-plot-with-ggplot2-setting-width-of-geom-bar
+  if (FALSE) {
+    library(ggplot2)
+    set.seed(123)
+    x <- arima.sim(n = 200, model = list(ar = 0.6))
+    bacf <- acf(x, plot = FALSE)
+    bacfdf <- with(bacf, data.frame(lag, acf))
+
+    q <- ggplot(data = bacfdf, mapping = aes(x = lag, y = acf)) +
+           geom_hline(aes(yintercept = 0)) +
+                  geom_segment(mapping = aes(xend = lag, yend = 0))
+    print(q)
+  }
 }
