@@ -237,3 +237,34 @@ if (FALSE) {
   dev.off()
 }
 
+
+# XXXX TO DO document this!
+#
+jointdensityplotfn <- function(fit, adf=NULL, cols=c(1,2),
+                               colNames=c('Alpha', 'Beta'),
+                               tikzOutFnam=NULL) {
+  if (is.null(fit)) {
+    fit.s <- extract(fit)
+  }
+  # need to 
+  adf <- data.frame(alpha=as.numeric(fit.s$alpha),
+                  beta=as.numeric(fit.s$beta),
+                  lp=as.numeric(fit.s$lp__))
+  
+  stopifnot(require(ggplot2))
+  if (!is.null(tikzOutFnam)) {
+    stopifnot(require(tikzDevice))
+    tikz(tikzOutFnam, width=kTIKZ.width, height=kTIKZ.height)
+  }
+  # subsample down from 20k+ points to 1k if lots of points...
+  if (nrow(adf) > 1000)
+    adf <- adf[sample(nrow(adf), size=1000),]
+  adf <- adf[,cols]
+  names(adf) <- c('alpha', 'beta')
+  p <- qplot(alpha, beta, xlim=c(0, max(adf$alpha)),
+             xlab=colNames[[1]], ylab=colNames[[2]],
+             geom='point', data=adf)
+  print(p + stat_density2d())
+  if (!is.null(tikzOutFnam)) dev.off()
+  print(p + stat_density2d())
+}
