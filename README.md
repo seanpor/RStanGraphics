@@ -32,6 +32,10 @@ stanPathPlot(fit)
 
 The file parsediagnostic.R contains a first cut at reading a Stan
 diagnostic file and converting it into an R usable form.
+It contains a list of params, e.g. the stuff at the top of the diagnostic
+file like stepsize, adapt_gamma and the other "parameters" like
+the diagonal elements of the inverse mass matrix and the time taken to 
+run this chain.
 
 Constructive feedback welcome.
 
