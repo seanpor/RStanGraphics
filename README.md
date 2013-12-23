@@ -30,6 +30,9 @@ fit <- readRDS('sample_banana_fit_object.rds')
 stanPathPlot(fit)
 ```
 
+The file parsediagnostic.R contains a first cut at reading a Stan
+diagnostic file and converting it into an R usable form.
+
 Constructive feedback welcome.
 
 
