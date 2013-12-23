@@ -128,7 +128,7 @@ parsediagnostic <- function(fnam) {
   list(params=retlist, diags=data.frame(retcsv))
 }
 
-test.parsediagnostic() {
+test.parsediagnostic <- function() {
   fnam1 <- dir(path='./visual-diagnostics-master/', pattern='^diagnostic_file.dat.*$', full=TRUE)[[1]]
   # debug(parsediagnostic)
   tres <- parsediagnostic(fnam1)
