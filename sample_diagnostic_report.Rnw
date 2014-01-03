@@ -1,0 +1,33 @@
+\documentclass{article}
+\title{Stan Diagnostic plotting in R}
+
+\begin{document}
+\maketitle
+
+<<>>=
+source('parsediagnostic.R')
+tg1 <- parsediagnostic('diagnostic_file.dat_1.csv')
+tg1d <- tg1$diags
+require(ggplot2)
+
+
+qplot(1:nrow(tg1d), lp__, data=tg1d, xlab='Iteration',
+        ylab='Log Posterior', geom='line', colour=mode)
+
+qplot(lp__, data=tg1d, geom='histogram',
+        xlab='Log Posterior')
+
+qplot(1:nrow(tg1d), accept_stat__, data=tg1d, xlab='Iteration',
+        ylab='Mean Metropolis Acceptance', geom='line', colour=mode)
+
+qplot(accept_stat__, lp__, data=tg1d, colour=mode, xlab='Mean Metropolis Acceptance',
+      ylab='Log Posterior')
+
+qplot(accept_stat__, data=tg1d, geom='histogram',
+        xlab='Mean Metropolis Acceptance')
+
+qplot(1:nrow(tg1d), treedepth__, data=tg1d, xlab='Iteration',
+        ylab='Tree depth', geom='line', colour=mode)
+@
+
+\end{document}
