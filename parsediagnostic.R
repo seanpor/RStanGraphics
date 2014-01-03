@@ -52,20 +52,26 @@ if (FALSE) {
 }
 
 
-# this function takes a single file name and parses that file and
-# returns a datastructure containing the parameter information and a data.frame
+# This is the main function for parsing
+# the diagnostic files from Stan and it takes a single file name
+# and parses that file and returns a data structure containing
+# the parameter information and a data.frame
 # with the diagnostic info
 parsediagnostic <- function(fnam) {
+  # TODO need some asserts here...
   # first is this a file
   # with non-zero length
 
   # now lets grab the entire file into memory and we'll manipulate it there...
-  txt <- readLines(fnam) # might need to add warn=FALSE depending on the stucture of the files
+  # might need to add warn=FALSE depending on the stucture of the files
+  txt <- readLines(fnam)
+
   # now lets pull the lines which start with a # 'cause mostly that's where 
   # the parameters are
   hlines.l <- grep('^# ', txt)
   hlines <- txt[hlines.l]
-  # did this in two steps so we can see where the breaks are... i.e. a abs(diff()) > 1
+  # did this in two steps so we can see where the breaks are...
+  # i.e. a abs(diff()) > 1
   wh <- which(diff(hlines.l) > 1)
   # grab the parameters
   # first the lines they're on
@@ -98,9 +104,14 @@ parsediagnostic <- function(fnam) {
   retcsv <- rbind(acsv, scsv)
   retcsv$mode <- as.factor(retcsv$mode)
 
-  retlist <- c(retlist, namepairStringToList(txt[[grep('# Step size =', txt)]], convertNumerics=TRUE))
+  # Stepsize is a special case and found in the middle of the diagnostic file
+  ss.txt <- txt[[grep('# Step size =', txt)]] # pull the relevant line
+  ss.txt <- gsub('^# ', '', ss.txt) # remove leading "# "
+  ss.txt <- gsub(' ', '', ss.txt) # remove spaces...
+  retlist <- c(retlist, namepairStringToList(ss.txt, convertNumerics=TRUE))
   
-  # that's all well and good... but we also need the Diagonal elements of the inverse mass matrix...
+  # that's all well and good... but we also need the Diagonal elements of the
+  # inverse mass matrix...
   imm.l <- grep('^# Diagonal elements of inverse mass matrix', txt) + 1
   tmp <- txt[imm.l] # but this is in text form... and looks something like
   # "# 1.14485, 1.6325"
@@ -109,7 +120,7 @@ parsediagnostic <- function(fnam) {
   # split out and convert to numeric
   retlist$inverse.mass.matrix <- as.numeric(unlist(strsplit(tmp, ', ')))
 
-  # and don't forget the times at the end of the file
+  # and don't forget the times at the end of the diagnostic file
   et.l <- grep('^# Elapsed Time:', txt)
   # first warmup...
   tmp <- gsub('^.*: ', '', txt[[et.l]])
@@ -128,33 +139,59 @@ parsediagnostic <- function(fnam) {
   list(params=retlist, diags=data.frame(retcsv))
 }
 
-test.parsediagnostic <- function() {
-  fnam1 <- dir(path='./visual-diagnostics-master/', pattern='^diagnostic_file.dat.*$', full=TRUE)[[1]]
+test.parsediagnostic <- function(fnam) {
+  if (is.null(fnam)) { # assume my own dev tree
+    fnam1 <- dir(path='./visual-diagnostics-master/',
+                 pattern='^diagnostic_file.dat.*$', full=TRUE)[[1]]
+  } else {
+    fnam1 <- fnam
+    # should test for existance here
+  }
+  # should really give a more sane message...
+  stopifnot(nchar(fnam1) > 0) # does it contain a string with length > 0?
+
   # debug(parsediagnostic)
   tres <- parsediagnostic(fnam1)
   stopifnot(require(ggplot2))
 
   # alpha, beta is specific to this problem
-  qplot(as.ordered(treedepth__), alpha, data=tres$diags, geom='violin', xlab='Tree depth') 
-  qplot(stepsize__, alpha, data=tres$diags, xlab='Step Size', log='x') 
+  q <- qplot(as.ordered(treedepth__), alpha, data=tres$diags, geom='violin',
+        xlab='Tree depth', colour=mode) 
+  print(q)
+  q <- qplot(stepsize__, alpha, data=tres$diags, xlab='Step Size',
+             log='x', colour=mode) 
+  print(q)
 
   
-  qplot(as.ordered(treedepth__), beta, data=tres$diags, geom='violin', xlab='Tree depth') 
-  qplot(stepsize__, beta, data=tres$diags, xlab='Step Size', log='x') 
+  q <- qplot(as.ordered(treedepth__), beta, data=tres$diags, geom='violin',
+        xlab='Tree depth', colour=mode) 
+  print(q)
+
+  q <- qplot(stepsize__, beta, data=tres$diags, xlab='Step Size', log='x',
+             colour=mode) 
+  print(q)
 
   # generic type plots...
 
   # histogram of Tree Depth
-  qplot(ordered(treedepth__), data=tres$diags, geom='histogram', xlab='Tree depth')
+  q <- qplot(ordered(treedepth__), data=tres$diags, geom='histogram',
+        xlab='Tree depth')
+  print(q)
 
   # where is the mass of stepsize wrt treedepth - violin plot
-  qplot(as.ordered(treedepth__), stepsize__, data=tres$diags, geom='violin', xlab='Tree depth')
+  q <- qplot(as.ordered(treedepth__), stepsize__, data=tres$diags, geom='violin',
+        xlab='Tree depth') # , colour=mode)
+  print(q)
 
   # so how did tree depth move as the chain progressed?
-  qplot(1:nrow(tres$diags), treedepth__, data=tres$diags, xlab='Iteration', ylab='Tree depth', geom='line', colour=mode)
+  q <- qplot(1:nrow(tres$diags), treedepth__, data=tres$diags, xlab='Iteration',
+        ylab='Tree depth', geom='line', colour=mode)
+  print(q)
 
   # so how did stepsize move as the chain progressed?
-  qplot(1:nrow(tres$diags), stepsize__, data=tres$diags, xlab='Iteration', geom='line', colour=mode, log='y')
+  q <- qplot(1:nrow(tres$diags), stepsize__, data=tres$diags, xlab='Iteration',
+        geom='line', colour=mode, log='y')
+  print(q)
 
 
   # for the record plotting an ACF is done in ggplot2 like
