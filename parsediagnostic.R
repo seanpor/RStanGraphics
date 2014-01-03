@@ -92,6 +92,7 @@ parsediagnostic <- function(fnam) {
   # pull the adaption samples
   atxt <- txt[(hlines.l[[wh[[1]]]]+2):(hlines.l[[wh[[1]]+1]]-1)]
   acsv <- read.csv(textConnection(atxt), stringsAsFactor=FALSE)
+  # note that these are the adaption phase
   acsv$mode <- 'Adaption'
   s1 <- hlines.l[[wh[[1]]+1]]+4
   s2 <- hlines.l[wh[2]+1]-1
@@ -99,8 +100,9 @@ parsediagnostic <- function(fnam) {
   # but add the header
   stxt <- c(atxt[[1]], stxt)
   scsv <- read.csv(textConnection(stxt), stringsAsFactor=FALSE)
+  # note that this is the sampling phase
   scsv$mode <- 'Sampling'
-
+  # make both the adaption and samplind details into one data.frame
   retcsv <- rbind(acsv, scsv)
   retcsv$mode <- as.factor(retcsv$mode)
 
@@ -118,7 +120,7 @@ parsediagnostic <- function(fnam) {
   # strip the leading '# '
   tmp <- gsub('^# ', '', tmp)
   # split out and convert to numeric
-  retlist$inverse.mass.matrix <- as.numeric(unlist(strsplit(tmp, ', ')))
+  retlist$diag.inverse.mass.matrix <- as.numeric(unlist(strsplit(tmp, ', ')))
 
   # and don't forget the times at the end of the diagnostic file
   et.l <- grep('^# Elapsed Time:', txt)
